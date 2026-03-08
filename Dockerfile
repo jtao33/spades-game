@@ -19,11 +19,14 @@ RUN npx prisma generate
 # Copy source code
 COPY . .
 
-# Build the application
+# Build the Next.js application
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine AS runner
+# Build the socket server
+RUN npm run build:socket
+
+# Production stage for Next.js
+FROM node:20-alpine AS nextjs-runner
 
 WORKDIR /app
 
@@ -59,3 +62,28 @@ ENV DATABASE_URL="file:/app/data/spades.db"
 
 # Run migrations and start server
 CMD npx prisma migrate deploy && node server.js
+
+# Production stage for Socket.io server
+FROM node:20-alpine AS socket-runner
+
+WORKDIR /app
+
+ENV NODE_ENV=production
+
+# Create non-root user
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 socketjs
+
+# Copy socket server
+COPY --from=builder /app/dist/socket-server.js ./socket-server.js
+
+# Set ownership
+RUN chown -R socketjs:nodejs /app
+
+USER socketjs
+
+EXPOSE 3001
+
+ENV SOCKET_PORT=3001
+
+CMD ["node", "socket-server.js"]

@@ -75,6 +75,7 @@ export default function HomePage() {
   const menuItems = [
     { label: "New Game", onClick: () => setShowDifficultyModal(true), primary: true },
     ...(canContinue ? [{ label: "Continue Game", onClick: () => router.push("/game"), primary: false }] : []),
+    { label: "Multiplayer", href: "/multiplayer", primary: false },
     { label: "Tutorial", href: "/tutorial", primary: false },
     { label: "Game History", href: "/history", primary: false },
     { label: "Settings", href: "/settings", primary: false },
@@ -133,7 +134,7 @@ export default function HomePage() {
         animate={{ opacity: 1 }}
         transition={{ delay: 0.8 }}
       >
-        <p>First to 500 wins | Nil (+100) | Blind Nil (+200)</p>
+        <p>First to 500 wins | Nil (+50) | Blind Nil (+100) | 5 bags = -50</p>
       </motion.footer>
 
       {/* Difficulty selection modal */}

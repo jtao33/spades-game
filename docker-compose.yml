@@ -1,15 +1,35 @@
 services:
-  spades:
-    build: .
-    container_name: spades-app
+  # Next.js web application
+  spades-web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: nextjs-runner
+    container_name: spades-web
     restart: unless-stopped
     ports:
-      - "3003:3000"
+      - "3002:3000"
     volumes:
       - spades-data:/app/data
     environment:
       - NODE_ENV=production
       - DATABASE_URL=file:/app/data/spades.db
+    depends_on:
+      - spades-socket
+
+  # Socket.io server for multiplayer
+  spades-socket:
+    build:
+      context: .
+      dockerfile: Dockerfile.socket
+    container_name: spades-socket
+    restart: unless-stopped
+    ports:
+      - "3003:3001"
+    environment:
+      - NODE_ENV=production
+      - SOCKET_PORT=3001
+      - ALLOWED_ORIGINS=http://localhost:3002,https://spades.jtphillyserver.com,https://spades-ws.jtphillyserver.com
 
 volumes:
   spades-data:
