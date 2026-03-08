@@ -1,0 +1,15 @@
+services:
+  spades:
+    build: .
+    container_name: spades-app
+    restart: unless-stopped
+    ports:
+      - "3003:3000"
+    volumes:
+      - spades-data:/app/data
+    environment:
+      - NODE_ENV=production
+      - DATABASE_URL=file:/app/data/spades.db
+
+volumes:
+  spades-data:

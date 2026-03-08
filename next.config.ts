@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Enable standalone output for Docker
+  output: "standalone",
   // External packages for server-side rendering
   serverExternalPackages: ["@prisma/client", "prisma"],
   // Suppress build warnings

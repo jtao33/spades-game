@@ -23,18 +23,18 @@ import { TeamScore, Team } from "./types";
 export const SCORING_CONSTANTS = {
   /** Points earned per bid trick made */
   POINTS_PER_BID: 10,
-  /** Bonus for successfully making a nil bid */
-  NIL_BONUS: 100,
-  /** Penalty for failing a nil bid */
-  NIL_PENALTY: -100,
-  /** Bonus for successfully making a blind nil bid */
-  BLIND_NIL_BONUS: 200,
-  /** Penalty for failing a blind nil bid */
-  BLIND_NIL_PENALTY: -200,
-  /** Number of bags that triggers a penalty */
-  BAG_PENALTY_THRESHOLD: 10,
-  /** Points deducted when bag threshold is reached */
-  BAG_PENALTY: -100,
+  /** Bonus for successfully making a nil bid (JT's house rules: 50) */
+  NIL_BONUS: 50,
+  /** Penalty for failing a nil bid (JT's house rules: -50) */
+  NIL_PENALTY: -50,
+  /** Bonus for successfully making a blind nil bid (JT's house rules: 100) */
+  BLIND_NIL_BONUS: 100,
+  /** Penalty for failing a blind nil bid (JT's house rules: -100) */
+  BLIND_NIL_PENALTY: -100,
+  /** Number of bags that triggers a penalty (JT's house rules: 5) */
+  BAG_PENALTY_THRESHOLD: 5,
+  /** Points deducted when bag threshold is reached (JT's house rules: -50) */
+  BAG_PENALTY: -50,
   /** Score required to win the game */
   WINNING_SCORE: 500,
 } as const;
