@@ -1,5 +1,5 @@
 # Build stage
-FROM node:20-alpine AS builder
+FROM node:22-alpine AS builder
 
 WORKDIR /app
 
@@ -26,7 +26,7 @@ RUN npm run build
 RUN npm run build:socket
 
 # Production stage for Next.js
-FROM node:20-alpine AS nextjs-runner
+FROM node:22-alpine AS nextjs-runner
 
 WORKDIR /app
 
@@ -64,7 +64,7 @@ ENV DATABASE_URL="file:/app/data/spades.db"
 CMD npx prisma migrate deploy && node server.js
 
 # Production stage for Socket.io server
-FROM node:20-alpine AS socket-runner
+FROM node:22-alpine AS socket-runner
 
 WORKDIR /app
 
