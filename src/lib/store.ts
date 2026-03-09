@@ -492,14 +492,9 @@ export const useGameStore = create<GameStore>((set, get) => ({
         // Then here we just handle the nextRound transition.
     }
 
-    // 3. Round End -> Next Round
+    // 3. Round End -> Wait for user to click continue (handled by UI)
+    // Do NOT auto-continue here - let the RoundEndModal handle it
     if (state.phase === "round_end" && !state.winner) {
-       set({ isAnimating: true });
-       setTimeout(() => {
-         get().nextRound();
-         set({ isAnimating: false });
-         // checkGameLoop called by nextRound->dealHands
-       }, ANIMATION_DELAYS.AUTO_CONTINUE_DELAY);
        return;
     }
 

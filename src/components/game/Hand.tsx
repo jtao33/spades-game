@@ -17,9 +17,9 @@ interface HandProps {
   size?: "sm" | "md" | "lg";
 }
 
-// Suit order for sorting
-const SUIT_ORDER_LEFT: Record<string, number> = { spades: 0, hearts: 1, diamonds: 2, clubs: 3 };
-const SUIT_ORDER_RIGHT: Record<string, number> = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
+// Suit order for sorting (alternating colors)
+const SUIT_ORDER_LEFT: Record<string, number> = { spades: 0, hearts: 1, clubs: 2, diamonds: 3 };
+const SUIT_ORDER_RIGHT: Record<string, number> = { diamonds: 0, clubs: 1, hearts: 2, spades: 3 };
 
 export const Hand = memo(function Hand({
   cards,

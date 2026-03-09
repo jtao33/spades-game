@@ -216,6 +216,8 @@ export const GameTable = memo(function GameTable() {
           roundNumber={round.roundNumber}
           playerTeamScore={playerTeamScore}
           opponentTeamScore={opponentTeamScore}
+          players={players}
+          onContinue={() => useGameStore.getState().nextRound()}
         />
       )}
 
