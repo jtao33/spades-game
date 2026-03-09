@@ -69,7 +69,7 @@ export const Hand = memo(function Hand({
       >
         {cards.map((card, index) => (
           <motion.div
-            key={`${position}-${card.id}-${index}`}
+            key={card.id}
             className="absolute"
             style={{
               top: index * cardOverlap,
@@ -108,7 +108,7 @@ export const Hand = memo(function Hand({
       >
         {cards.map((card, index) => (
           <motion.div
-            key={`${position}-${card.id}-${index}`}
+            key={card.id}
             className="absolute"
             style={{
               left: index * cardOverlap,
@@ -157,7 +157,7 @@ export const Hand = memo(function Hand({
 
           return (
             <motion.div
-              key={`${position}-${card.id}-${index}`}
+              key={card.id}
               className="absolute"
               style={{
                 left: `calc(50% + ${offset * cardOverlap}px - ${cardWidth / 2}px)`,
