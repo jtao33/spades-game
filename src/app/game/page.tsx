@@ -3,10 +3,17 @@
 import { useEffect } from "react";
 import { GameTable } from "@/components/game";
 import { useGameStore } from "@/lib/store";
+import { useSettingsStore } from "@/lib/settingsStore";
 
 export default function GamePage() {
   const phase = useGameStore((s) => s.phase);
   const startNewGame = useGameStore((s) => s.startNewGame);
+  const loadSettings = useSettingsStore((s) => s.loadSettings);
+
+  // Load settings on mount
+  useEffect(() => {
+    loadSettings();
+  }, [loadSettings]);
 
   // If no active game, start one with default difficulty
   useEffect(() => {

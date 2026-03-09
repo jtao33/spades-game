@@ -1,9 +1,10 @@
 "use client";
 
-import { memo } from "react";
+import { memo, useMemo } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Card as CardType } from "@/lib/game/types";
+import { Card as CardType, RANK_VALUES } from "@/lib/game/types";
 import { Card } from "./Card";
+import { useSettingsStore } from "@/lib/settingsStore";
 
 interface HandProps {
   cards: CardType[];
@@ -16,6 +17,10 @@ interface HandProps {
   size?: "sm" | "md" | "lg";
 }
 
+// Suit order for sorting
+const SUIT_ORDER_LEFT: Record<string, number> = { spades: 0, hearts: 1, diamonds: 2, clubs: 3 };
+const SUIT_ORDER_RIGHT: Record<string, number> = { clubs: 0, diamonds: 1, hearts: 2, spades: 3 };
+
 export const Hand = memo(function Hand({
   cards,
   validPlays = [],
@@ -26,8 +31,28 @@ export const Hand = memo(function Hand({
   showCards = true,
   size = "md",
 }: HandProps) {
+  const cardSortOrder = useSettingsStore((s) => s.cardSortOrder);
+  const spadesPosition = useSettingsStore((s) => s.spadesPosition);
+
   const isVertical = position === "west" || position === "east";
   const validCardIds = new Set(validPlays.map((c) => c.id));
+
+  // Sort cards for human player
+  const sortedCards = useMemo(() => {
+    if (!isHuman) return cards;
+
+    const suitOrder = spadesPosition === "left" ? SUIT_ORDER_LEFT : SUIT_ORDER_RIGHT;
+
+    return [...cards].sort((a, b) => {
+      // First sort by suit
+      const suitDiff = suitOrder[a.suit] - suitOrder[b.suit];
+      if (suitDiff !== 0) return suitDiff;
+
+      // Then sort by rank
+      const rankDiff = RANK_VALUES[a.rank] - RANK_VALUES[b.rank];
+      return cardSortOrder === "ascending" ? rankDiff : -rankDiff;
+    });
+  }, [cards, isHuman, cardSortOrder, spadesPosition]);
 
   // Vertical layout for east/west positions (AI opponents - simple stack)
   if (isVertical) {
@@ -109,7 +134,8 @@ export const Hand = memo(function Hand({
 
   // South player (human) - large fanned cards
   const fanAngle = 4; // degrees between each card
-  const totalCards = cards.length;
+  const displayCards = isHuman ? sortedCards : cards;
+  const totalCards = displayCards.length;
   const cardWidth = size === "lg" ? 100 : size === "md" ? 80 : 60;
   const cardOverlap = size === "lg" ? 55 : size === "md" ? 45 : 35;
   
@@ -122,7 +148,7 @@ export const Hand = memo(function Hand({
       }}
     >
       <AnimatePresence mode="popLayout">
-        {cards.map((card, index) => {
+        {displayCards.map((card, index) => {
           const centerIndex = (totalCards - 1) / 2;
           const offset = index - centerIndex;
           const rotation = offset * fanAngle;

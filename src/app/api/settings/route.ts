@@ -13,16 +13,23 @@ const DEFAULT_SETTINGS = {
   difficulty: "medium",
   animationSpeed: "normal",
   showTutorial: true,
+  cardSortOrder: "ascending",
+  spadesPosition: "left",
 } as const;
 
 interface SettingsBody {
   difficulty?: string;
   animationSpeed?: string;
   showTutorial?: boolean;
+  cardSortOrder?: string;
+  spadesPosition?: string;
 }
 
+const VALID_SORT_ORDERS = ["ascending", "descending"];
+const VALID_SPADES_POSITIONS = ["left", "right"];
+
 function validateSettingsBody(body: SettingsBody): string | null {
-  const { difficulty, animationSpeed, showTutorial } = body;
+  const { difficulty, animationSpeed, showTutorial, cardSortOrder, spadesPosition } = body;
 
   if (difficulty !== undefined && !isValidDifficulty(difficulty)) {
     return "Invalid difficulty value";
@@ -32,6 +39,12 @@ function validateSettingsBody(body: SettingsBody): string | null {
   }
   if (showTutorial !== undefined && typeof showTutorial !== "boolean") {
     return "Invalid showTutorial value";
+  }
+  if (cardSortOrder !== undefined && !VALID_SORT_ORDERS.includes(cardSortOrder)) {
+    return "Invalid cardSortOrder value";
+  }
+  if (spadesPosition !== undefined && !VALID_SPADES_POSITIONS.includes(spadesPosition)) {
+    return "Invalid spadesPosition value";
   }
 
   return null;
@@ -69,7 +82,7 @@ export async function POST(request: NextRequest) {
     return errorResponse(validationError, 400);
   }
 
-  const { difficulty, animationSpeed, showTutorial } = body ?? {};
+  const { difficulty, animationSpeed, showTutorial, cardSortOrder, spadesPosition } = body ?? {};
 
   return withErrorHandler(
     async () => {
@@ -79,12 +92,16 @@ export async function POST(request: NextRequest) {
           ...(difficulty && { difficulty }),
           ...(animationSpeed && { animationSpeed }),
           ...(showTutorial !== undefined && { showTutorial }),
+          ...(cardSortOrder && { cardSortOrder }),
+          ...(spadesPosition && { spadesPosition }),
         },
         create: {
           id: "global",
           difficulty: difficulty || "medium",
           animationSpeed: animationSpeed || "normal",
           showTutorial: showTutorial ?? true,
+          cardSortOrder: cardSortOrder || "ascending",
+          spadesPosition: spadesPosition || "left",
         },
       });
 

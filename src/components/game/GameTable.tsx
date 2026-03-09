@@ -183,9 +183,9 @@ export const GameTable = memo(function GameTable() {
       {/* Hint display */}
       <HintDisplay showHint={showHint} hintCard={hintCard} />
 
-      {/* Bidding UI */}
+      {/* Bidding UI - positioned above cards, not blocking them */}
       {phase === "bidding" && round.currentPlayer === PLAYER_POSITIONS.SOUTH && (
-        <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm z-40">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-40">
           <BidSelector
             onBid={handlePlayerBid}
             partnerBid={players.north.bid}

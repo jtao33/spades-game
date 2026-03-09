@@ -58,6 +58,8 @@ model Settings {
   difficulty      String  @default("medium") // easy, medium, hard
   animationSpeed  String  @default("normal") // slow, normal, fast
   showTutorial    Boolean @default(true)
+  cardSortOrder   String  @default("ascending") // ascending, descending
+  spadesPosition  String  @default("left") // left, right
 }
 
 model Stats {

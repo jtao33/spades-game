@@ -16,22 +16,28 @@ interface Settings {
   difficulty: "easy" | "medium" | "hard";
   animationSpeed: "slow" | "normal" | "fast";
   showTutorial: boolean;
+  cardSortOrder: "ascending" | "descending";
+  spadesPosition: "left" | "right";
 }
 
 const DEFAULT_SETTINGS: Settings = {
   difficulty: "medium",
   animationSpeed: "normal",
   showTutorial: true,
+  cardSortOrder: "ascending",
+  spadesPosition: "left",
 };
 
 const DIFFICULTY_OPTIONS = ["easy", "medium", "hard"] as const;
 const SPEED_OPTIONS = ["slow", "normal", "fast"] as const;
+const SORT_ORDER_OPTIONS = ["ascending", "descending"] as const;
+const SPADES_POSITION_OPTIONS = ["left", "right"] as const;
 
 const GAME_RULES = [
   { label: "Win condition", value: "500 points", highlight: true },
-  { label: "Nil bonus/penalty", value: "+100 / -100", highlight: false },
-  { label: "Blind Nil bonus/penalty", value: "+200 / -200", highlight: false },
-  { label: "Bag penalty", value: "-100 per 10 bags", highlight: false },
+  { label: "Nil bonus/penalty", value: "+50 / -50", highlight: false },
+  { label: "Blind Nil bonus/penalty", value: "+100 / -100", highlight: false },
+  { label: "Bag penalty", value: "-50 per 5 bags", highlight: false },
 ] as const;
 
 export default function SettingsPage() {
@@ -117,6 +123,24 @@ export default function SettingsPage() {
             checked={settings.showTutorial}
             onChange={(v) => handleChange("showTutorial", v)}
             label="Show tutorial for new players"
+          />
+        </Section>
+
+        {/* Card Sorting */}
+        <Section title="Card Sort Order" description="How cards are sorted in your hand by rank">
+          <ToggleButtonGroup
+            options={SORT_ORDER_OPTIONS}
+            value={settings.cardSortOrder}
+            onChange={(v) => handleChange("cardSortOrder", v)}
+          />
+        </Section>
+
+        {/* Spades Position */}
+        <Section title="Spades Position" description="Where spades appear in your hand">
+          <ToggleButtonGroup
+            options={SPADES_POSITION_OPTIONS}
+            value={settings.spadesPosition}
+            onChange={(v) => handleChange("spadesPosition", v)}
           />
         </Section>
 
