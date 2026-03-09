@@ -1,10 +1,14 @@
 "use client";
 
-import { memo, useState, useEffect, useCallback } from "react";
+import React, { memo, useState, useEffect, useCallback } from "react";
 import { motion } from "framer-motion";
 import { TeamScore, Player, PlayerPosition } from "@/lib/game/types";
 import { formatBid } from "@/lib/game/scoring";
-import { SCORING_CONSTANTS } from "@/lib/game/scoring";
+import {
+  getTeamScoringEvents,
+  formatPlayerDetails,
+  useScoringHistoryStore,
+} from "@/lib/scoringHistory";
 
 interface RoundEndModalProps {
   roundNumber: number;
@@ -12,81 +16,6 @@ interface RoundEndModalProps {
   opponentTeamScore: TeamScore;
   players: Record<PlayerPosition, Player>;
   onContinue: () => void;
-}
-
-interface ScoringEvent {
-  text: string;
-  points: number;
-}
-
-function getTeamScoringEvents(
-  player1: Player,
-  player2: Player,
-  player1Name: string,
-  player2Name: string
-): ScoringEvent[] {
-  const events: ScoringEvent[] = [];
-  const { POINTS_PER_BID, NIL_BONUS, NIL_PENALTY, BLIND_NIL_BONUS, BLIND_NIL_PENALTY, BAG_PENALTY_THRESHOLD, BAG_PENALTY } = SCORING_CONSTANTS;
-
-  // Check nil bids
-  const checkNil = (player: Player, name: string) => {
-    const isBlindNil = player.bid === -1;
-    const isNil = player.bid === 0 || isBlindNil;
-
-    if (isNil) {
-      const madeNil = player.tricksWon === 0;
-      if (madeNil) {
-        const bonus = isBlindNil ? BLIND_NIL_BONUS : NIL_BONUS;
-        events.push({
-          text: `${name} made ${isBlindNil ? "Blind Nil" : "Nil"}`,
-          points: bonus,
-        });
-      } else {
-        const penalty = isBlindNil ? BLIND_NIL_PENALTY : NIL_PENALTY;
-        events.push({
-          text: `${name} ${isBlindNil ? "Blind Nil" : "Nil"} broken (${player.tricksWon} tricks)`,
-          points: penalty,
-        });
-      }
-    }
-  };
-
-  checkNil(player1, player1Name);
-  checkNil(player2, player2Name);
-
-  // Calculate team bid (excluding nil bidders)
-  const p1Bid = (player1.bid === 0 || player1.bid === -1) ? 0 : (player1.bid ?? 0);
-  const p2Bid = (player2.bid === 0 || player2.bid === -1) ? 0 : (player2.bid ?? 0);
-  const teamBid = p1Bid + p2Bid;
-
-  // Calculate non-nil tricks
-  const p1Tricks = (player1.bid === 0 || player1.bid === -1) ? 0 : player1.tricksWon;
-  const p2Tricks = (player2.bid === 0 || player2.bid === -1) ? 0 : player2.tricksWon;
-  const teamTricks = p1Tricks + p2Tricks;
-
-  if (teamBid > 0) {
-    if (teamTricks >= teamBid) {
-      events.push({
-        text: `Made bid of ${teamBid}`,
-        points: teamBid * POINTS_PER_BID,
-      });
-
-      const bags = teamTricks - teamBid;
-      if (bags > 0) {
-        events.push({
-          text: `Took ${bags} bag${bags > 1 ? "s" : ""}`,
-          points: bags,
-        });
-      }
-    } else {
-      events.push({
-        text: `Set! Bid ${teamBid}, made ${teamTricks}`,
-        points: -(teamBid * POINTS_PER_BID),
-      });
-    }
-  }
-
-  return events;
 }
 
 /**
@@ -99,19 +28,25 @@ export const RoundEndModal = memo(function RoundEndModal({
   players,
   onContinue,
 }: RoundEndModalProps) {
-  const [timeLeft, setTimeLeft] = useState(10);
+  const [timeLeft, setTimeLeft] = useState(15);
+  const [hasClicked, setHasClicked] = useState(false);
+  const onContinueRef = React.useRef(onContinue);
+  onContinueRef.current = onContinue;
 
   const handleContinue = useCallback(() => {
-    onContinue();
-  }, [onContinue]);
+    if (hasClicked) return;
+    setHasClicked(true);
+    onContinueRef.current();
+  }, [hasClicked]);
 
   // Auto-continue after 10 seconds
   useEffect(() => {
+    if (hasClicked) return;
+
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
           clearInterval(timer);
-          handleContinue();
           return 0;
         }
         return prev - 1;
@@ -119,21 +54,57 @@ export const RoundEndModal = memo(function RoundEndModal({
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [handleContinue]);
+  }, [hasClicked]);
 
-  const playerEvents = getTeamScoringEvents(
+  // Trigger continue when timer reaches 0
+  useEffect(() => {
+    if (timeLeft === 0 && !hasClicked) {
+      handleContinue();
+    }
+  }, [timeLeft, hasClicked, handleContinue]);
+
+  const addRound = useScoringHistoryStore((s) => s.addRound);
+
+  const playerEvents = React.useMemo(() => getTeamScoringEvents(
     players.south,
     players.north,
     "You",
     "Partner"
-  );
+  ), [players.south, players.north]);
 
-  const opponentEvents = getTeamScoringEvents(
+  const opponentEvents = React.useMemo(() => getTeamScoringEvents(
     players.west,
     players.east,
     "West",
     "East"
-  );
+  ), [players.west, players.east]);
+
+  const playerDetails = React.useMemo(() => formatPlayerDetails(
+    players.south,
+    players.north,
+    "You",
+    "Partner"
+  ), [players.south, players.north]);
+
+  const opponentDetails = React.useMemo(() => formatPlayerDetails(
+    players.west,
+    players.east,
+    "West",
+    "East"
+  ), [players.west, players.east]);
+
+  // Save to history on mount
+  useEffect(() => {
+    addRound({
+      roundNumber,
+      playerTeamScore,
+      opponentTeamScore,
+      playerEvents,
+      opponentEvents,
+      playerDetails,
+      opponentDetails,
+    });
+  }, []); // Only run once on mount
 
   return (
     <motion.div

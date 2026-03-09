@@ -9,6 +9,7 @@ export { Hand } from "./Hand";
 export { TrickArea } from "./TrickArea";
 export { ScoreDisplay } from "./ScoreDisplay";
 export { RoundEndModal } from "./RoundEndModal";
+export { ScoringHistoryModal } from "./ScoringHistoryModal";
 export { PlayerLabel } from "./PlayerLabel";
 export { TopBar } from "./TopBar";
 export {

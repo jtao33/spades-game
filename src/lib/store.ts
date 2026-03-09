@@ -35,6 +35,7 @@ import { determineTrickWinner, getValidPlays, wouldBreakSpades } from "./game/ru
 import { calculateRoundScore, updateTeamScore, checkWinner } from "./game/scoring";
 import { calculateAIBid, selectAICard, getAIThinkingDelay } from "./game/ai";
 import { ANIMATION_DELAYS, GAME_CONSTANTS, PLAYER_POSITIONS } from "./game/constants";
+import { useScoringHistoryStore } from "./scoringHistory";
 
 /**
  * Default team score state for new games.
@@ -166,11 +167,14 @@ export const useGameStore = create<GameStore>((set, get) => ({
     state.difficulty = difficulty;
     state.phase = "dealing";
     // Use crypto.randomUUID() for unpredictable game IDs
-    state.id = typeof crypto !== "undefined" && crypto.randomUUID 
+    state.id = typeof crypto !== "undefined" && crypto.randomUUID
       ? crypto.randomUUID()
       : `game-${Date.now()}-${Math.random().toString(36).substring(2, 11)}`;
     set(state);
-    
+
+    // Clear scoring history for new game
+    useScoringHistoryStore.getState().clearHistory();
+
     // Deal cards after a short delay for animation
     setTimeout(() => {
       get().dealHands();

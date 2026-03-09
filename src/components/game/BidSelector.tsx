@@ -56,8 +56,8 @@ export const BidSelector = memo(function BidSelector({
   };
 
   const getBidDescription = (bid: number): string => {
-    if (bid === BID_CONSTANTS.BLIND_NIL_BID) return "Bid 0 tricks without seeing your cards (+200/-200)";
-    if (bid === BID_CONSTANTS.NIL_BID) return "Bid 0 tricks (+100/-100)";
+    if (bid === BID_CONSTANTS.BLIND_NIL_BID) return "Bid 0 tricks without seeing your cards (+100/-100)";
+    if (bid === BID_CONSTANTS.NIL_BID) return "Bid 0 tricks (+50/-50)";
     return `Bid to win ${bid} trick${bid === 1 ? "" : "s"}`;
   };
 

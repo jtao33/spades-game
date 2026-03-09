@@ -89,6 +89,10 @@ export const GameTable = memo(function GameTable() {
     startNewGame(difficulty);
   }, [startNewGame, difficulty]);
 
+  const handleNextRound = useCallback(() => {
+    useGameStore.getState().nextRound();
+  }, []);
+
   const handleGetHint = useCallback(() => {
     if (phase !== "playing" || round.currentPlayer !== PLAYER_POSITIONS.SOUTH) return;
     
@@ -217,7 +221,7 @@ export const GameTable = memo(function GameTable() {
           playerTeamScore={playerTeamScore}
           opponentTeamScore={opponentTeamScore}
           players={players}
-          onContinue={() => useGameStore.getState().nextRound()}
+          onContinue={handleNextRound}
         />
       )}
 
