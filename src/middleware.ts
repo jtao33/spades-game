@@ -2,41 +2,34 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 /**
- * Security headers proxy for all routes.
+ * Security headers middleware for all routes.
  * Adds essential security headers to protect against common web vulnerabilities.
  */
-export function proxy(_request: NextRequest) {
+export function middleware(_request: NextRequest) {
   const response = NextResponse.next();
 
+  // Socket server URL for CSP
+  const socketUrl = process.env.NEXT_PUBLIC_SOCKET_URL || "https://spades-ws.jtphillyserver.com";
+  const socketHost = new URL(socketUrl).host;
+
   // Content Security Policy - Prevents XSS attacks
-  // Allow self, inline scripts/styles (needed for Next.js), and data URIs for images
   const cspDirectives = [
     "default-src 'self'",
     "script-src 'self' 'unsafe-inline' 'unsafe-eval'", // Required for Next.js
-    "style-src 'self' 'unsafe-inline'", // Required for Framer Motion and styled components
+    "style-src 'self' 'unsafe-inline'", // Required for Framer Motion
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
-    "connect-src 'self'",
+    `connect-src 'self' https://${socketHost} wss://${socketHost}`,
     "frame-ancestors 'none'",
     "base-uri 'self'",
     "form-action 'self'",
   ].join("; ");
 
   response.headers.set("Content-Security-Policy", cspDirectives);
-
-  // Prevent clickjacking attacks
   response.headers.set("X-Frame-Options", "DENY");
-
-  // Prevent MIME type sniffing
   response.headers.set("X-Content-Type-Options", "nosniff");
-
-  // Enable browser XSS filter (legacy but still useful)
   response.headers.set("X-XSS-Protection", "1; mode=block");
-
-  // Control referrer information leakage
   response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
-
-  // Permissions Policy - Restrict browser features
   response.headers.set(
     "Permissions-Policy",
     "camera=(), microphone=(), geolocation=(), payment=()"
@@ -45,17 +38,9 @@ export function proxy(_request: NextRequest) {
   return response;
 }
 
-// Apply proxy to all routes except static files
+// Apply middleware to all routes except static files
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - public folder files (images, etc.)
-     */
     "/((?!_next/static|_next/image|favicon.ico|imgs/|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };
-

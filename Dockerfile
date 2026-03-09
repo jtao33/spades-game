@@ -19,6 +19,10 @@ RUN npx prisma generate
 # Copy source code
 COPY . .
 
+# Build argument for socket URL (Next.js requires NEXT_PUBLIC_* at build time)
+ARG NEXT_PUBLIC_SOCKET_URL
+ENV NEXT_PUBLIC_SOCKET_URL=${NEXT_PUBLIC_SOCKET_URL}
+
 # Build the Next.js application
 RUN npm run build
 

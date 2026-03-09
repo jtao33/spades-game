@@ -81,12 +81,30 @@ export default function MultiplayerPage() {
   };
 
   if (!isConnected) {
+    // Debug: show what URL we're trying to connect to
+    const getSocketUrl = () => {
+      if (typeof window === "undefined") return "http://localhost:3001";
+      const envSocketUrl = process.env.NEXT_PUBLIC_SOCKET_URL;
+      if (envSocketUrl) return envSocketUrl;
+      const host = window.location.hostname;
+      if (window.location.port === "" || window.location.port === "443" || window.location.port === "80") {
+        const parts = host.split(".");
+        if (parts.length >= 2 && parts[0] === "spades") {
+          parts[0] = "spades-ws";
+          return `${window.location.protocol}//${parts.join(".")}`;
+        }
+      }
+      return `${window.location.protocol}//${host}:3001`;
+    };
+
     return (
       <div className="min-h-screen flex flex-col items-center justify-center p-4">
         <Logo size={80} />
         <div className="mt-8 text-center">
           <div className="animate-spin w-8 h-8 border-2 border-amber-400 border-t-transparent rounded-full mx-auto mb-4" />
           <p className="text-gray-400">Connecting to server...</p>
+          <p className="text-xs text-gray-500 mt-4">Socket URL: {typeof window !== "undefined" ? getSocketUrl() : "..."}</p>
+          <p className="text-xs text-gray-600 mt-1">Check browser console (F12) for errors</p>
         </div>
       </div>
     );

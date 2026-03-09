@@ -5,6 +5,8 @@ services:
       context: .
       dockerfile: Dockerfile
       target: nextjs-runner
+      args:
+        - NEXT_PUBLIC_SOCKET_URL=https://spades-ws.jtphillyserver.com
     container_name: spades-web
     restart: unless-stopped
     ports:
