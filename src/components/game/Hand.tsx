@@ -56,6 +56,17 @@ export const Hand = memo(function Hand({
     });
   }, [cards, isHuman, cardSortOrder, spadesPosition]);
 
+  // On mobile, don't render opponent/partner cards - just show count
+  if (isMobile && !isHuman) {
+    return (
+      <div className="flex items-center justify-center">
+        <span className="text-xs text-gray-400 bg-black/30 px-2 py-1 rounded">
+          {cards.length} cards
+        </span>
+      </div>
+    );
+  }
+
   // Vertical layout for east/west positions (AI opponents - simple stack)
   if (isVertical) {
     const cardOverlap = Math.round(15 * cardScale);

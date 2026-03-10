@@ -42,14 +42,17 @@ export function useResponsive(): ResponsiveConfig {
       let trickScale = 1;
 
       if (minDimension < 400) {
+        cardScale = 0.4;
+        trickScale = 0.45;
+      } else if (minDimension < 500) {
         cardScale = 0.5;
-        trickScale = 0.5;
+        trickScale = 0.55;
       } else if (minDimension < 600) {
-        cardScale = 0.65;
-        trickScale = 0.65;
+        cardScale = 0.6;
+        trickScale = 0.6;
       } else if (minDimension < 800) {
-        cardScale = 0.8;
-        trickScale = 0.8;
+        cardScale = 0.75;
+        trickScale = 0.75;
       }
 
       setConfig({

@@ -354,6 +354,16 @@ body {
   display: none;
 }
 
+/* Hide scrollbar utility */
+.scrollbar-hide {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Safe area support for notched devices */
 @supports (padding: max(0px)) {
   .safe-area-bottom {
