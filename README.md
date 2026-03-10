@@ -47,6 +47,51 @@ Spades is a fully-featured implementation of the classic trick-taking card game,
 - **Persistent Progress**: Game history, statistics, and settings saved automatically
 - **Production Ready**: Security headers, rate limiting, input validation, and structured logging
 
+---
+
+## Fork Changes (JT's House Rules Edition)
+
+This fork includes several customizations and improvements:
+
+### Scoring Changes ("JT's House Rules")
+| Rule | Original | This Fork |
+|------|----------|-----------|
+| Nil bonus/penalty | +100/-100 | **+50/-50** |
+| Blind Nil bonus/penalty | +200/-200 | **+100/-100** |
+| Bag penalty threshold | 10 bags | **5 bags** |
+| Bag penalty | -100 | **-50** |
+
+### New Features
+- **Multiplayer Support**: WebSocket-based multiplayer via Socket.io (separate server)
+- **Scoring History**: View round-by-round scoring breakdown with detailed events
+- **Card Sorting Options**: Choose ascending/descending rank order and spades position (left/right)
+- **Mobile Responsive UI**: Fully playable on phones with adaptive card sizing
+- **Docker Deployment**: Multi-container setup with Cloudflare Tunnel support
+
+### UI/UX Improvements
+- **Round End Modal**: 15-second timer with detailed scoring breakdown per team
+- **Landscape Mode**: Larger cards when phone is rotated horizontally
+- **Mobile Optimizations**: Simplified UI on small screens (hidden opponent cards, swipe bid selector)
+- **Card Sorting**: Alternating color suit order (spades-hearts-clubs-diamonds)
+
+### Technical Changes
+- Docker multi-stage builds for web and socket server
+- CSP middleware allowing WebSocket connections
+- Responsive hooks for dynamic sizing based on viewport
+
+### Deployment
+```bash
+# Docker deployment
+docker compose build
+docker compose up -d
+
+# Services:
+# - spades-web: Next.js app on port 3002
+# - spades-socket: Socket.io server on port 3003
+```
+
+---
+
 ## Screenshots
 
 <p align="center">
@@ -150,18 +195,18 @@ npm start
 3. **Playing**: 13 tricks are played following suit rules
 4. **Scoring**: Points awarded based on bid success
 
-### Scoring
+### Scoring (JT's House Rules)
 
 | Scenario | Points |
 |----------|--------|
 | Made bid | +10 per trick bid |
 | Overtricks (bags) | +1 each |
 | Set (missed bid) | -10 per trick bid |
-| Nil success | +100 |
-| Nil failure | -100 |
-| Blind Nil success | +200 |
-| Blind Nil failure | -200 |
-| 10 bags penalty | -100 |
+| Nil success | +50 |
+| Nil failure | -50 |
+| Blind Nil success | +100 |
+| Blind Nil failure | -100 |
+| **5 bags penalty** | -50 |
 
 ### Controls
 
