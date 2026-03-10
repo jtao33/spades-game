@@ -10,6 +10,7 @@ interface PlayerLabelProps {
   tricks: number;
   isCurrentPlayer: boolean;
   isHuman?: boolean;
+  compact?: boolean;
 }
 
 /**
@@ -21,21 +22,24 @@ export const PlayerLabel = memo(function PlayerLabel({
   tricks,
   isCurrentPlayer,
   isHuman = false,
+  compact = false,
 }: PlayerLabelProps) {
+  const displayName = compact && !isHuman ? name.charAt(0) : name;
+
   return (
     <motion.div
       className="text-center"
       animate={isCurrentPlayer ? { scale: [1, 1.05, 1] } : {}}
       transition={{ duration: 1, repeat: isCurrentPlayer ? Infinity : 0 }}
     >
-      <span 
-        className="text-lg font-bold drop-shadow-lg"
-        style={{ 
+      <span
+        className={`font-bold drop-shadow-lg ${compact ? "text-xs sm:text-sm" : "text-sm sm:text-lg"}`}
+        style={{
           color: isHuman ? "#ff6b6b" : "#ffd700",
-          textShadow: "2px 2px 4px rgba(0,0,0,0.8)"
+          textShadow: "1px 1px 2px rgba(0,0,0,0.8)"
         }}
       >
-        {name}: {tricks}/{formatBid(bid, true)}
+        {displayName}: {tricks}/{formatBid(bid, true)}
       </span>
     </motion.div>
   );

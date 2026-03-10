@@ -69,13 +69,13 @@ export const BidSelector = memo(function BidSelector({
 
   return (
     <motion.div
-      className="glass-panel p-4 rounded-xl max-w-md mx-auto"
+      className="glass-panel p-3 sm:p-4 rounded-xl max-w-sm sm:max-w-md mx-auto"
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
     >
       <h3
-        className="text-center font-display text-lg mb-4 tracking-wider"
+        className="text-center font-display text-base sm:text-lg mb-3 sm:mb-4 tracking-wider"
         style={{ fontFamily: "var(--font-cinzel)", color: "#ffd700" }}
       >
         PLACE YOUR BID
@@ -143,10 +143,10 @@ export const BidSelector = memo(function BidSelector({
       {!showConfirm && (
         <>
           {/* Special bids */}
-          <div className="flex justify-center gap-2 mb-4">
+          <div className="flex justify-center gap-2 mb-3 sm:mb-4">
             <motion.button
               className={`
-                px-4 py-2 rounded-lg border text-sm font-medium
+                px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border text-xs sm:text-sm font-medium
                 ${
                   selectedBid === BID_CONSTANTS.BLIND_NIL_BID
                     ? "bg-gold text-midnight border-gold"
@@ -162,7 +162,7 @@ export const BidSelector = memo(function BidSelector({
             </motion.button>
             <motion.button
               className={`
-                px-4 py-2 rounded-lg border text-sm font-medium
+                px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg border text-xs sm:text-sm font-medium
                 ${
                   selectedBid === BID_CONSTANTS.NIL_BID
                     ? "bg-gold text-midnight border-gold"
@@ -179,12 +179,12 @@ export const BidSelector = memo(function BidSelector({
           </div>
 
           {/* Number bids */}
-          <div className="grid grid-cols-7 gap-2">
+          <div className="grid grid-cols-7 gap-1 sm:gap-2">
             {Array.from({ length: 13 }, (_, i) => i + 1).map((bid) => (
               <motion.button
                 key={bid}
                 className={`
-                  w-10 h-10 rounded-lg border text-sm font-mono font-medium
+                  w-8 h-8 sm:w-10 sm:h-10 rounded-lg border text-xs sm:text-sm font-mono font-medium
                   ${
                     selectedBid === bid
                       ? "bg-gold border-gold"
@@ -193,7 +193,7 @@ export const BidSelector = memo(function BidSelector({
                       : "border-gold/40 hover:border-gold/70 hover:bg-gold/10"
                   }
                 `}
-                style={{ 
+                style={{
                   fontFamily: "var(--font-fira-code)",
                   color: selectedBid === bid ? "#000000" : "#ffffff"
                 }}

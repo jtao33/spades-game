@@ -42,7 +42,7 @@ export const GameOverModal = memo(function GameOverModal({
 
           {/* Modal */}
           <motion.div
-            className="relative glass-panel p-8 rounded-2xl max-w-md w-full text-center"
+            className="relative glass-panel p-4 sm:p-8 rounded-2xl max-w-md w-full text-center mx-2"
             initial={{ scale: 0.8, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 50 }}

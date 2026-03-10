@@ -6,6 +6,7 @@ import { Card as CardType, PlayerPosition } from "@/lib/game/types";
 import { getValidPlays } from "@/lib/game/rules";
 import { getHintCard } from "@/lib/game/ai";
 import { ANIMATION_DELAYS, PLAYER_POSITIONS } from "@/lib/game/constants";
+import { useResponsive } from "@/lib/hooks/useResponsive";
 import { Hand } from "./Hand";
 import { TrickArea } from "./TrickArea";
 import { BidSelector } from "./BidSelector";
@@ -74,6 +75,7 @@ export const GameTable = memo(function GameTable() {
   const difficulty = useGameStore((s) => s.difficulty);
   const placeBid = useGameStore((s) => s.placeBid);
   const startNewGame = useGameStore((s) => s.startNewGame);
+  const { isMobile } = useResponsive();
 
   const [hintCard, setHintCard] = useState<CardType | null>(null);
   const [showHint, setShowHint] = useState(false);
@@ -119,7 +121,7 @@ export const GameTable = memo(function GameTable() {
   }, [phase, round, players]);
 
   return (
-    <div 
+    <div
       className="relative w-full h-screen overflow-hidden"
       style={{
         background: "linear-gradient(145deg, #1a5f4a 0%, #0d4a3a 50%, #0a3d2f 100%)"
@@ -135,34 +137,37 @@ export const GameTable = memo(function GameTable() {
       </TopBar>
 
       {/* Partner (North) */}
-      <div className="absolute top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+      <div className="absolute top-14 sm:top-20 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 sm:gap-2">
         <PlayerArea position={PLAYER_POSITIONS.NORTH} />
         <PlayerLabel
           name={players.north.name}
           bid={players.north.bid}
           tricks={players.north.tricksWon}
           isCurrentPlayer={round.currentPlayer === PLAYER_POSITIONS.NORTH && phase === "playing"}
+          compact={isMobile}
         />
       </div>
 
       {/* West Opponent */}
-      <div className="absolute left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
+      <div className="absolute left-1 sm:left-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1 sm:gap-3">
         <PlayerLabel
           name={players.west.name}
           bid={players.west.bid}
           tricks={players.west.tricksWon}
           isCurrentPlayer={round.currentPlayer === PLAYER_POSITIONS.WEST && phase === "playing"}
+          compact={isMobile}
         />
         <PlayerArea position={PLAYER_POSITIONS.WEST} />
       </div>
 
       {/* East Opponent */}
-      <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-3">
+      <div className="absolute right-1 sm:right-4 top-1/2 -translate-y-1/2 flex flex-col items-center gap-1 sm:gap-3">
         <PlayerLabel
           name={players.east.name}
           bid={players.east.bid}
           tricks={players.east.tricksWon}
           isCurrentPlayer={round.currentPlayer === PLAYER_POSITIONS.EAST && phase === "playing"}
+          compact={isMobile}
         />
         <PlayerArea position={PLAYER_POSITIONS.EAST} />
       </div>
@@ -173,13 +178,14 @@ export const GameTable = memo(function GameTable() {
       </div>
 
       {/* Player (South) */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+      <div className="absolute bottom-2 sm:bottom-4 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 sm:gap-2">
         <PlayerLabel
           name="You"
           bid={players.south.bid}
           tricks={players.south.tricksWon}
           isCurrentPlayer={round.currentPlayer === PLAYER_POSITIONS.SOUTH && phase === "playing"}
           isHuman
+          compact={isMobile}
         />
         <PlayerArea position={PLAYER_POSITIONS.SOUTH} />
       </div>

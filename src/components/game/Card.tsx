@@ -13,14 +13,15 @@ interface CardProps {
   isSelected?: boolean;
   onClick?: () => void;
   size?: "sm" | "md" | "lg";
+  scale?: number;
   animationDelay?: number;
   className?: string;
 }
 
 const sizeMap = {
-  sm: { width: 60, height: 84 },
-  md: { width: 80, height: 112 },
-  lg: { width: 105, height: 147 },
+  sm: { width: 50, height: 70 },
+  md: { width: 70, height: 98 },
+  lg: { width: 90, height: 126 },
 };
 
 const cardVariants: Variants = {
@@ -73,10 +74,15 @@ export const Card = memo(function Card({
   isSelected = false,
   onClick,
   size = "md",
+  scale = 1,
   animationDelay = 0,
   className = "",
 }: CardProps) {
-  const dimensions = sizeMap[size];
+  const baseDimensions = sizeMap[size];
+  const dimensions = {
+    width: Math.round(baseDimensions.width * scale),
+    height: Math.round(baseDimensions.height * scale),
+  };
   const [isHovered, setIsHovered] = useState(false);
 
   return (

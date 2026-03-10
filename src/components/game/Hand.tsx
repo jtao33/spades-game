@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Card as CardType, RANK_VALUES } from "@/lib/game/types";
 import { Card } from "./Card";
 import { useSettingsStore } from "@/lib/settingsStore";
+import { useResponsive } from "@/lib/hooks/useResponsive";
 
 interface HandProps {
   cards: CardType[];
@@ -33,6 +34,7 @@ export const Hand = memo(function Hand({
 }: HandProps) {
   const cardSortOrder = useSettingsStore((s) => s.cardSortOrder);
   const spadesPosition = useSettingsStore((s) => s.spadesPosition);
+  const { cardScale, isMobile } = useResponsive();
 
   const isVertical = position === "west" || position === "east";
   const validCardIds = new Set(validPlays.map((c) => c.id));
@@ -56,14 +58,15 @@ export const Hand = memo(function Hand({
 
   // Vertical layout for east/west positions (AI opponents - simple stack)
   if (isVertical) {
-    const cardOverlap = 20; // How much each card overlaps
-    const totalHeight = Math.min(cards.length * cardOverlap + 60, 320);
-    
+    const cardOverlap = Math.round(15 * cardScale);
+    const cardWidth = Math.round(50 * cardScale);
+    const totalHeight = Math.min(cards.length * cardOverlap + Math.round(60 * cardScale), Math.round(280 * cardScale));
+
     return (
-      <div 
+      <div
         className="relative"
-        style={{ 
-          width: 50,
+        style={{
+          width: cardWidth,
           height: totalHeight
         }}
       >
@@ -86,6 +89,7 @@ export const Hand = memo(function Hand({
               faceDown={true}
               isPlayable={false}
               size="sm"
+              scale={cardScale}
             />
           </motion.div>
         ))}
@@ -95,15 +99,16 @@ export const Hand = memo(function Hand({
 
   // North player (partner) - horizontal face-down cards
   if (position === "north") {
-    const cardOverlap = 25;
-    const totalWidth = Math.min(cards.length * cardOverlap + 40, 400);
-    
+    const cardOverlap = Math.round(20 * cardScale);
+    const cardHeight = Math.round(70 * cardScale);
+    const totalWidth = Math.min(cards.length * cardOverlap + Math.round(40 * cardScale), Math.round(350 * cardScale));
+
     return (
-      <div 
+      <div
         className="relative"
-        style={{ 
+        style={{
           width: totalWidth,
-          height: 70
+          height: cardHeight
         }}
       >
         {cards.map((card, index) => (
@@ -125,6 +130,7 @@ export const Hand = memo(function Hand({
               faceDown={true}
               isPlayable={false}
               size="sm"
+              scale={cardScale}
             />
           </motion.div>
         ))}
@@ -133,18 +139,24 @@ export const Hand = memo(function Hand({
   }
 
   // South player (human) - large fanned cards
-  const fanAngle = 4; // degrees between each card
+  const fanAngle = isMobile ? 2 : 4; // Less angle on mobile
   const displayCards = isHuman ? sortedCards : cards;
   const totalCards = displayCards.length;
-  const cardWidth = size === "lg" ? 100 : size === "md" ? 80 : 60;
-  const cardOverlap = size === "lg" ? 55 : size === "md" ? 45 : 35;
-  
+
+  // Scale card dimensions and overlap based on screen size
+  const baseCardWidth = size === "lg" ? 90 : size === "md" ? 70 : 50;
+  const baseCardOverlap = size === "lg" ? 45 : size === "md" ? 35 : 25;
+  const cardWidth = Math.round(baseCardWidth * cardScale);
+  const cardOverlap = Math.round(baseCardOverlap * cardScale);
+  const containerHeight = Math.round((size === "lg" ? 160 : size === "md" ? 120 : 90) * cardScale);
+  const hoverLift = Math.round(25 * cardScale);
+
   return (
-    <div 
+    <div
       className="relative flex justify-center"
-      style={{ 
-        height: size === "lg" ? 180 : size === "md" ? 140 : 100,
-        paddingTop: 20
+      style={{
+        height: containerHeight,
+        paddingTop: Math.round(15 * cardScale)
       }}
     >
       <AnimatePresence mode="popLayout">
@@ -152,7 +164,7 @@ export const Hand = memo(function Hand({
           const centerIndex = (totalCards - 1) / 2;
           const offset = index - centerIndex;
           const rotation = offset * fanAngle;
-          const yOffset = Math.abs(offset) * 3; // Arc effect
+          const yOffset = Math.abs(offset) * Math.round(2 * cardScale);
           const isPlayable = isHuman && isCurrentPlayer && validCardIds.has(card.id);
 
           return (
@@ -166,20 +178,20 @@ export const Hand = memo(function Hand({
                 transformOrigin: "bottom center",
               }}
               initial={{ opacity: 0, y: 100, rotate: 0 }}
-              animate={{ 
-                opacity: 1, 
-                y: 0, 
+              animate={{
+                opacity: 1,
+                y: 0,
                 rotate: rotation,
               }}
               exit={{ opacity: 0, y: 100 }}
-              transition={{ 
+              transition={{
                 type: "spring",
                 stiffness: 300,
                 damping: 30,
-                delay: index * 0.03 
+                delay: index * 0.03
               }}
-              whileHover={isPlayable ? { 
-                y: -30, 
+              whileHover={isPlayable ? {
+                y: -hoverLift,
                 zIndex: 100,
                 scale: 1.1,
                 transition: { duration: 0.15 }
@@ -192,6 +204,7 @@ export const Hand = memo(function Hand({
                 faceDown={!showCards}
                 isPlayable={isPlayable}
                 size={size}
+                scale={cardScale}
                 className={isPlayable ? "cursor-pointer" : ""}
               />
             </motion.div>

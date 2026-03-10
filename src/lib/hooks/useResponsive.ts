@@ -1,0 +1,88 @@
+"use client";
+
+import { useState, useEffect } from "react";
+
+export type ScreenSize = "xs" | "sm" | "md" | "lg";
+
+interface ResponsiveConfig {
+  screenSize: ScreenSize;
+  isMobile: boolean;
+  isTablet: boolean;
+  cardScale: number;
+  trickScale: number;
+}
+
+const getScreenSize = (width: number): ScreenSize => {
+  if (width < 480) return "xs";
+  if (width < 768) return "sm";
+  if (width < 1024) return "md";
+  return "lg";
+};
+
+export function useResponsive(): ResponsiveConfig {
+  const [config, setConfig] = useState<ResponsiveConfig>({
+    screenSize: "lg",
+    isMobile: false,
+    isTablet: false,
+    cardScale: 1,
+    trickScale: 1,
+  });
+
+  useEffect(() => {
+    const updateConfig = () => {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const screenSize = getScreenSize(width);
+      const isMobile = screenSize === "xs" || screenSize === "sm";
+      const isTablet = screenSize === "md";
+
+      // Calculate scale based on smallest dimension
+      const minDimension = Math.min(width, height);
+      let cardScale = 1;
+      let trickScale = 1;
+
+      if (minDimension < 400) {
+        cardScale = 0.5;
+        trickScale = 0.5;
+      } else if (minDimension < 600) {
+        cardScale = 0.65;
+        trickScale = 0.65;
+      } else if (minDimension < 800) {
+        cardScale = 0.8;
+        trickScale = 0.8;
+      }
+
+      setConfig({
+        screenSize,
+        isMobile,
+        isTablet,
+        cardScale,
+        trickScale,
+      });
+    };
+
+    updateConfig();
+    window.addEventListener("resize", updateConfig);
+    return () => window.removeEventListener("resize", updateConfig);
+  }, []);
+
+  return config;
+}
+
+// Card size calculations
+export const getResponsiveCardSize = (
+  baseSize: "sm" | "md" | "lg",
+  scale: number
+): { width: number; height: number } => {
+  const baseSizes = {
+    sm: { width: 50, height: 70 },
+    md: { width: 70, height: 98 },
+    lg: { width: 90, height: 126 },
+  };
+
+  const base = baseSizes[baseSize];
+  return {
+    width: Math.round(base.width * scale),
+    height: Math.round(base.height * scale),
+  };
+};
