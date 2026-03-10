@@ -34,7 +34,7 @@ export const Hand = memo(function Hand({
 }: HandProps) {
   const cardSortOrder = useSettingsStore((s) => s.cardSortOrder);
   const spadesPosition = useSettingsStore((s) => s.spadesPosition);
-  const { cardScale, isMobile } = useResponsive();
+  const { cardScale, isMobile, isLandscape } = useResponsive();
 
   const isVertical = position === "west" || position === "east";
   const validCardIds = new Set(validPlays.map((c) => c.id));
@@ -56,8 +56,9 @@ export const Hand = memo(function Hand({
     });
   }, [cards, isHuman, cardSortOrder, spadesPosition]);
 
-  // On mobile, don't render opponent/partner cards - just show count
-  if (isMobile && !isHuman) {
+  // On mobile portrait, don't render opponent/partner cards - just show count
+  // In landscape, show cards since there's more horizontal space
+  if (isMobile && !isLandscape && !isHuman) {
     return (
       <div className="flex items-center justify-center">
         <span className="text-xs text-gray-400 bg-black/30 px-2 py-1 rounded">
